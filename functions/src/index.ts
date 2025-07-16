@@ -13,107 +13,10 @@ interface RequestPayload {
 interface AccessCodeData {
     code: string;
     isActive: boolean;
-    usesRemaining: number | null;
-    expirationDate: admin.firestore.Timestamp | string | null;
+    usesRemaining: number | undefined;
+    expirationDate: admin.firestore.Timestamp | undefined;
     associatedUserID: string;
-    firstUseTimestamp: admin.firestore.Timestamp | null;
-}
-
-interface Resume {
-    resume: ResumeProfile;
-    experiences: JobExperience[];
-    skills: Skill[];
-    educationEntries: EducationEntry[];
-    references: Reference[];
-}
-
-interface HomeInfo{
-    tagline: string;
-    location: string;
-    yearsExperience: number;
-    email: string;
-    phoneNumber: string;
-    linkedInUrl: string;
-    githubUrl: string;
-    profilePictureUrl?: string;
-}
-
-interface ResumeProfile {
-    resumeId: string;
-    homeInfo: HomeInfo;
-}
-
-interface JobExperience {
-    resumeOwnerId: string;
-    company: string;
-    title: string;
-    startDate: string;
-    endDate?: string;
-    responsibilities: string[];
-    technologies: string[];
-}
-
-interface Skill {
-    resumeOwnerId: string;
-    category: string;
-    name: string;
-}
-
-interface EducationEntry {
-    resumeOwnerId: string;
-    institution: string;
-    degree: string;
-    yearsAttended: string;
-    description: string;
-    imageUrl?: string;
-    contentDescription?: string;
-}
-
-interface Reference {
-    resumeOwnerId: string;
-    name: string;
-    roleWhenWorked: string;
-    description?: string;
-    yearsWorkedTogether: string;
-    linkedInProfileUrl: string;
-    profilePictureUrl?: string;
-}
-
-function convertDataToResume(data: DocumentData, resumeId: string): Resume {
-    const homeInfo: HomeInfo = data['homeInfo'] as HomeInfo;
-
-    const resume: ResumeProfile = {
-        resumeId: resumeId,
-        homeInfo,
-    };
-    const experiences: JobExperience[] = (data['experience'])
-        .map((elem: JobExperience) => ({
-            ...elem,
-            resumeOwnerId: resumeId,
-        } as JobExperience));
-    const skills: Skill[] = (data['skills'])
-        .map((elem: Skill) => ({
-            ...elem,
-            resumeOwnerId: resumeId,
-        } as Skill));
-    const educationEntries: EducationEntry[] = (data['education'])
-        .map((elem: EducationEntry) => ({
-            ...elem,
-            resumeOwnerId: resumeId,
-        } as EducationEntry));
-    const references: Reference[] = (data['references'])
-        .map((elem: Reference) => ({
-            ...elem,
-            resumeOwnerId: resumeId,
-        } as Reference));
-
-    return {
-        resume,
-        experiences,
-        skills,
-        educationEntries,
-        references,
-    };
+    firstUseTimestamp: admin.firestore.Timestamp | undefined;
 }
 
 exports.getResumeData = functions.https.onCall(async (requestData) => {
@@ -137,13 +40,12 @@ exports.getResumeData = functions.https.onCall(async (requestData) => {
         if (!codeData.isActive) {
             throw new functions.https.HttpsError('permission-denied', 'Access code is inactive.');
         }
-        if (codeData.usesRemaining !== null && codeData.usesRemaining <= 0) {
+
+        if (codeData.usesRemaining !== undefined && codeData.usesRemaining <= 0) {
             throw new functions.https.HttpsError('permission-denied', 'Access code has no uses remaining.');
         }
         if (
             codeData.expirationDate &&
-            codeData.expirationDate !== 'null' &&
-            codeData.expirationDate !== null &&
             codeData.expirationDate instanceof admin.firestore.Timestamp &&
             codeData.expirationDate.toDate() < new Date()
         ) {
@@ -152,13 +54,16 @@ exports.getResumeData = functions.https.onCall(async (requestData) => {
 
         // 2. Decrement usesRemaining and set firstUseTimestamp if applicable
         const updates: { [key: string]: any } = {};
-        if (codeData.usesRemaining !== null) {
+        if (codeData.usesRemaining !== undefined) {
             updates.usesRemaining = admin.firestore.FieldValue.increment(-1);
         }
         if (!codeData.firstUseTimestamp) {
             updates.firstUseTimestamp = admin.firestore.FieldValue.serverTimestamp();
         }
-        await codeDoc.ref.update(updates);
+
+        if (Object.keys(updates).length > 0) {
+            await codeDoc.ref.update(updates);
+        }
 
         // 3. Fetch the real resume data
         const resumeDataRef = db.collection('users').doc(codeData.associatedUserID);
@@ -169,11 +74,9 @@ exports.getResumeData = functions.https.onCall(async (requestData) => {
             throw new functions.https.HttpsError('not-found', 'Resume data not found for this user.');
         }
 
-        const resume = convertDataToResume(data, codeData.associatedUserID);
-
         return {
             data: data as DocumentData,
-            resume: JSON.stringify(resume),
+            resume: data['resume'],
         };
     } catch (error: any) {
         console.error('Error fetching resume data:', error);

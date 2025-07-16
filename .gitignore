@@ -9,3 +9,6 @@
 .cxx
 local.properties
 app/src/google-services.json
+/samples
+functions/pglite-debug.log
+functions/firebase-debug.log

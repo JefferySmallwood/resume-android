@@ -71,6 +71,7 @@ fun AccessScreen(
             OutlinedTextField(
                 value = accessCodeInput,
                 onValueChange = {
+                    // TODO: Clear error when new text is entered
                     if (it.length < 20) {
                         accessCodeInput = it
                     }
@@ -109,7 +110,6 @@ fun AccessScreen(
 
             Button(
                 onClick = {
-                    accessViewModel.fetchResumeByAccessCode(accessCodeInput)
                     if (accessCodeInput.isNotBlank() && uiState is AccessUiState.Idle) {
                         accessViewModel.fetchResumeByAccessCode(accessCodeInput)
                         keyboardController?.hide()
