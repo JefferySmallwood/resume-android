@@ -22,7 +22,9 @@ import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.ResumeScreen
 import com.jws.resume.ui.access.AccessScreen
 import com.jws.resume.ui.theme.ResumeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
 

@@ -134,7 +134,7 @@ fun ResumeScreen(
                 // --- Home Section ---
                 item(key = "Home") {
                     HomeScreen(
-                        homeInfo = resume.homeInfo,
+                        homeInfo = resume.resume.homeInfo,
                         modifier = Modifier
                             .height(screenHeight)
                             .fillMaxWidth()
@@ -144,7 +144,7 @@ fun ResumeScreen(
                 // --- Experience Section ---
                 item(key = "Experience") {
                     SectionHeader(title = stringResource(R.string.experience))
-                    ExperienceSectionContent(experience = resume.experience)
+                    ExperienceSectionContent(experience = resume.experiences)
                 }
 
                 // --- Skills Section ---
@@ -156,7 +156,7 @@ fun ResumeScreen(
                 // --- Education Section ---
                 item(key = "Education") {
                     SectionHeader(title = stringResource(R.string.education))
-                    EducationSectionContent(education = resume.education)
+                    EducationSectionContent(education = resume.educationEntries)
                 }
 
                 // --- References Section ---

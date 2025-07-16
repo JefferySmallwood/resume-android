@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.jws.resume.R
-import com.jws.resume.model.EducationEntry
+import com.jws.resume.data.entities.EducationEntry
 import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.theme.ResumeTheme
 
@@ -123,7 +123,7 @@ fun EducationCardPreview() {
                 .fillMaxSize()
                 .padding(all = 16.dp)
         ) {
-            val entry = mockResumeData.education[0]
+            val entry = mockResumeData.educationEntries[0]
             EducationCard(entry)
         }
     }

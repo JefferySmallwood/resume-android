@@ -30,6 +30,7 @@ module.exports = {
     "quotes": ["error", "single"],
     "import/no-unresolved": 0,
     "indent": ["error", 4],
-    "max-len": ["error", { "code": 120, "ignoreUrls": true, "ignoreStrings": true }]
+    "max-len": ["error", { "code": 120, "ignoreUrls": true, "ignoreStrings": true }],
+    "require-jsdoc": ["warn"]
   },
 };

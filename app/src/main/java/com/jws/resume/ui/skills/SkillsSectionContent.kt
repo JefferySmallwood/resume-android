@@ -3,7 +3,6 @@ package com.jws.resume.ui.skills
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jws.resume.model.Skill
+import com.jws.resume.data.entities.Skill
 import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.common.Chip
 import com.jws.resume.ui.theme.ResumeTheme

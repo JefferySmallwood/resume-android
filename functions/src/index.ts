@@ -19,6 +19,103 @@ interface AccessCodeData {
     firstUseTimestamp: admin.firestore.Timestamp | null;
 }
 
+interface Resume {
+    resume: ResumeProfile;
+    experiences: JobExperience[];
+    skills: Skill[];
+    educationEntries: EducationEntry[];
+    references: Reference[];
+}
+
+interface HomeInfo{
+    tagline: string;
+    location: string;
+    yearsExperience: number;
+    email: string;
+    phoneNumber: string;
+    linkedInUrl: string;
+    githubUrl: string;
+    profilePictureUrl?: string;
+}
+
+interface ResumeProfile {
+    resumeId: string;
+    homeInfo: HomeInfo;
+}
+
+interface JobExperience {
+    resumeOwnerId: string;
+    company: string;
+    title: string;
+    startDate: string;
+    endDate?: string;
+    responsibilities: string[];
+    technologies: string[];
+}
+
+interface Skill {
+    resumeOwnerId: string;
+    category: string;
+    name: string;
+}
+
+interface EducationEntry {
+    resumeOwnerId: string;
+    institution: string;
+    degree: string;
+    yearsAttended: string;
+    description: string;
+    imageUrl?: string;
+    contentDescription?: string;
+}
+
+interface Reference {
+    resumeOwnerId: string;
+    name: string;
+    roleWhenWorked: string;
+    description?: string;
+    yearsWorkedTogether: string;
+    linkedInProfileUrl: string;
+    profilePictureUrl?: string;
+}
+
+function convertDataToResume(data: DocumentData, resumeId: string): Resume {
+    const homeInfo: HomeInfo = data['homeInfo'] as HomeInfo;
+
+    const resume: ResumeProfile = {
+        resumeId: resumeId,
+        homeInfo,
+    };
+    const experiences: JobExperience[] = (data['experience'])
+        .map((elem: JobExperience) => ({
+            ...elem,
+            resumeOwnerId: resumeId,
+        } as JobExperience));
+    const skills: Skill[] = (data['skills'])
+        .map((elem: Skill) => ({
+            ...elem,
+            resumeOwnerId: resumeId,
+        } as Skill));
+    const educationEntries: EducationEntry[] = (data['education'])
+        .map((elem: EducationEntry) => ({
+            ...elem,
+            resumeOwnerId: resumeId,
+        } as EducationEntry));
+    const references: Reference[] = (data['references'])
+        .map((elem: Reference) => ({
+            ...elem,
+            resumeOwnerId: resumeId,
+        } as Reference));
+
+    return {
+        resume,
+        experiences,
+        skills,
+        educationEntries,
+        references,
+    };
+}
+
 exports.getResumeData = functions.https.onCall(async (requestData) => {
     const {code: accessCode} = requestData.data as RequestPayload;
 
@@ -66,12 +163,18 @@ exports.getResumeData = functions.https.onCall(async (requestData) => {
         // 3. Fetch the real resume data
         const resumeDataRef = db.collection('users').doc(codeData.associatedUserID);
         const resumeDoc = await resumeDataRef.get();
+        const data = resumeDoc.data();
 
-        if (!resumeDoc.exists) {
+        if (!resumeDoc.exists || !data) {
             throw new functions.https.HttpsError('not-found', 'Resume data not found for this user.');
         }
 
-        return {data: resumeDoc.data() as DocumentData};
+        const resume = convertDataToResume(data, codeData.associatedUserID);
+
+        return {
+            data: data as DocumentData,
+            resume: JSON.stringify(resume),
+        };
     } catch (error: any) {
         console.error('Error fetching resume data:', error);
         if (error instanceof functions.https.HttpsError) {

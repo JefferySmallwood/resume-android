@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jws.resume.model.JobExperience
+import com.jws.resume.data.entities.JobExperience
 import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.theme.ResumeTheme
 
@@ -38,7 +38,7 @@ fun ExperienceSectionContent(
 fun ExperienceSectionContentPreview() {
     ResumeTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            ExperienceSectionContent(experience = mockResumeData.experience)
+            ExperienceSectionContent(experience = mockResumeData.experiences)
         }
     }
 }

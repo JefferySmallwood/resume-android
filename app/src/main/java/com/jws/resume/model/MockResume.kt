@@ -1,19 +1,29 @@
 package com.jws.resume.model
 
+import com.jws.resume.data.entities.EducationEntry
+import com.jws.resume.data.entities.HomeInfo
+import com.jws.resume.data.entities.JobExperience
+import com.jws.resume.data.entities.Reference
+import com.jws.resume.data.entities.ResumeProfile
+import com.jws.resume.data.entities.Skill
+
 val mockResumeData = Resume(
-    homeInfo = HomeInfo(
-        name = "Alex Doe",
-        tagline = "Versatile Developer | Creative Solutions",
-        location = "Anytown, USA",
-        yearsExperience = 5,
-        email = "alex.doe@example.com",
-        phoneNumber = "(555) 123-4567",
-        linkedInUrl = "https://linkedin.com",
-        githubUrl = "https://github.com",
-        profilePictureUrl = "https://firebasestorage.googleapis.com/v0/b/resume-3e51d.firebasestorage.app/o/resume-images%2Fcartoon-profile-picture.jpg?alt=media&token=d0d33a27-5347-43df-918f-01a327c62e6d"
+    resume = ResumeProfile(
+        homeInfo = HomeInfo(
+            name = "Alex Doe",
+            tagline = "Versatile Developer | Creative Solutions",
+            location = "Anytown, USA",
+            yearsExperience = 5,
+            email = "alex.doe@example.com",
+            phoneNumber = "(555) 123-4567",
+            linkedInUrl = "https://linkedin.com",
+            githubUrl = "https://github.com",
+            profilePictureUrl = "https://firebasestorage.googleapis.com/v0/b/resume-3e51d.firebasestorage.app/o/resume-images%2Fcartoon-profile-picture.jpg?alt=media&token=d0d33a27-5347-43df-918f-01a327c62e6d"
+        ),
     ),
-    experience = listOf(
+    experiences = listOf(
         JobExperience(
+            resumeOwnerId = "",
             company = "Tech Solutions Inc.",
             title = "Software Engineer",
             startDate = "2021",
@@ -27,6 +37,7 @@ val mockResumeData = Resume(
             technologies = listOf("Kotlin", "Java", "Spring Boot", "React", "Docker", "AWS")
         ),
         JobExperience(
+            resumeOwnerId = "",
             company = "Innovatech Ltd.",
             title = "Junior Developer",
             startDate = "2019",
@@ -41,17 +52,18 @@ val mockResumeData = Resume(
         )
     ),
     skills = listOf(
-        Skill(category = "Programming Languages", name = "Kotlin"),
-        Skill(category = "Programming Languages", name = "Java"),
-        Skill(category = "Programming Languages", name = "Python"),
-        Skill(category = "Web Development", name = "Spring Boot"),
-        Skill(category = "Web Development", name = "React"),
-        Skill(category = "Web Development", name = "HTML/CSS"),
-        Skill(category = "DevOps", name = "Docker"),
-        Skill(category = "Cloud", name = "AWS Basics")
+        Skill(resumeOwnerId = "", category = "Programming Languages", name = "Kotlin"),
+        Skill(resumeOwnerId = "", category = "Programming Languages", name = "Java"),
+        Skill(resumeOwnerId = "", category = "Programming Languages", name = "Python"),
+        Skill(resumeOwnerId = "", category = "Web Development", name = "Spring Boot"),
+        Skill(resumeOwnerId = "", category = "Web Development", name = "React"),
+        Skill(resumeOwnerId = "", category = "Web Development", name = "HTML/CSS"),
+        Skill(resumeOwnerId = "", category = "DevOps", name = "Docker"),
+        Skill(resumeOwnerId = "", category = "Cloud", name = "AWS Basics")
     ),
-    education = listOf(
+    educationEntries = listOf(
         EducationEntry(
+            resumeOwnerId = "",
             institution = "State University",
             degree = "B.S. Computer Science",
             yearsAttended = "2015 - 2019",
@@ -59,6 +71,7 @@ val mockResumeData = Resume(
             imageUrl = "https://firebasestorage.googleapis.com/v0/b/resume-3e51d.firebasestorage.app/o/resume-images%2Fzhanhui-li-1iuxWsIZ6ko-unsplash.jpg?alt=media&token=c4a3d79a-254d-4e96-af27-069b908e483e",
         ),
         EducationEntry(
+            resumeOwnerId = "",
             institution = "Online Coding Bootcamp",
             degree = "Full-Stack Web Development Certificate",
             yearsAttended = "2018",
@@ -68,6 +81,7 @@ val mockResumeData = Resume(
     ),
     references = listOf(
         Reference(
+            resumeOwnerId = "",
             name = "Dr. Jane Smith",
             roleWhenWorked = "Professor / Project Advisor",
             description = "My favorite professor, I learned a lot",
@@ -76,6 +90,7 @@ val mockResumeData = Resume(
             profilePictureUrl = "https://firebasestorage.googleapis.com/v0/b/resume-3e51d.firebasestorage.app/o/resume-images%2Fluthfi-alfarizi-yXAGGbVuhEY-unsplash.jpg?alt=media&token=fdfc780c-663c-4dd8-9805-a68946f00500 "
         ),
         Reference(
+            resumeOwnerId = "",
             name = "Bob Johnson",
             roleWhenWorked = "Senior Manager at Tech Solutions Inc.",
             description = "The best manager I've ever worked with. He guided me through the entire development process and introduced me to new technologies. He encouraged me to constantly grow and to build networks.",

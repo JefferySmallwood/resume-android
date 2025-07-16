@@ -37,7 +37,7 @@ import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.jws.resume.R
-import com.jws.resume.model.Reference
+import com.jws.resume.data.entities.Reference
 import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.theme.ResumeTheme
 
