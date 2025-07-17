@@ -1,7 +1,9 @@
 package com.jws.resume.data.repos
 
 import android.util.Log
+import com.jws.resume.data.dao.MetaDataDao
 import com.jws.resume.data.dao.ResumeDao
+import com.jws.resume.data.entities.MetaData
 import com.jws.resume.model.Resume
 import com.jws.resume.service.FirebaseFunctionsService
 import kotlinx.coroutines.Dispatchers
@@ -10,8 +12,29 @@ import kotlinx.coroutines.withContext
 
 class ResumeRepositoryImpl(
     private val resumeDao: ResumeDao,
+    private val metaDataDao: MetaDataDao,
     private val functionsService: FirebaseFunctionsService
 ) : ResumeRepository {
+
+    override suspend fun initializeMetaDataIfNeeded() {
+        val existingMetaData = metaDataDao.getMetaDataOnce()
+        if (existingMetaData == null) {
+            metaDataDao.insertOrReplace(MetaData())
+        }
+    }
+
+    override fun getCurrentResumeId(): Flow<String?> {
+        return metaDataDao.getCurrentResumeId()
+    }
+
+    override suspend fun setCurrentResumeId(resumeId: String) {
+        initializeMetaDataIfNeeded()
+        metaDataDao.updateCurrentResumeId(resumeId)
+    }
+
+    override suspend fun clearCurrentResumeId() {
+        metaDataDao.clearCurrentResumeId()
+    }
 
     override fun getAllResumes(): Flow<List<Resume>> {
         return resumeDao.getAllResumes()

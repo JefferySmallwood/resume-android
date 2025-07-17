@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -34,24 +35,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.google.firebase.functions.FirebaseFunctionsException
 import com.jws.resume.R
-import com.jws.resume.model.Resume
 import com.jws.resume.ui.theme.ResumeTheme
 
 @Composable
-fun AccessScreen(
+fun AccessCodeScreen(
     modifier: Modifier = Modifier,
-    accessViewModel: AccessViewModel = hiltViewModel(),
-    onNavigateToSuccessScreen: (resume: Resume) -> Unit = {},
-    onShowErrorMessage: (String) -> Unit = {},
+    accessCodeViewModel: AccessCodeViewModel = hiltViewModel(),
+    navController: NavHostController,
     content: @Composable () -> Unit = {}
 ) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val uiState by accessViewModel.uiState.collectAsState()
-    val downloadedResumes by accessViewModel.downloadedResumes.collectAsState()
+    val uiState by accessCodeViewModel.uiState.collectAsState()
+    val downloadedResumes by accessCodeViewModel.downloadedResumes.collectAsState()
     var accessCodeInput by remember { mutableStateOf("") }
 
     LazyColumn(
@@ -87,7 +87,7 @@ fun AccessScreen(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         if (accessCodeInput.isNotBlank() && uiState is AccessUiState.Idle) {
-                            accessViewModel.fetchResumeByAccessCode(accessCodeInput)
+                            accessCodeViewModel.fetchResumeByAccessCode(accessCodeInput)
                             keyboardController?.hide()
                         }
                     }
@@ -111,7 +111,7 @@ fun AccessScreen(
             Button(
                 onClick = {
                     if (accessCodeInput.isNotBlank() && uiState is AccessUiState.Idle) {
-                        accessViewModel.fetchResumeByAccessCode(accessCodeInput)
+                        accessCodeViewModel.fetchResumeByAccessCode(accessCodeInput)
                         keyboardController?.hide()
                     }
                 },
@@ -132,7 +132,9 @@ fun AccessScreen(
                  AccessUiState.Loading -> {} // TODO: Implement loading
                  is AccessUiState.Success -> {
                      Text("Success! Resume Name: ${state.resume.resume.homeInfo.name}")
-                     onNavigateToSuccessScreen(state.resume)
+                     accessCodeViewModel.setCurrentResumeId(state.resume.resume.resumeId)
+                     navController.navigate("resume/${state.resume.resume.resumeId}")
+
                  }
                  is AccessUiState.Error -> {
                      Text("Error: ${state.message}", color = Color.Red)
@@ -156,8 +158,8 @@ fun AccessScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            accessViewModel.loadResumeDetails(entry.resume.resumeId)
-                            onNavigateToSuccessScreen(entry)
+                            accessCodeViewModel.setCurrentResumeId(entry.resume.resumeId)
+                            navController.navigate("resume/${entry.resume.resumeId}")
                         }
                 )
                 Spacer(Modifier.height(12.dp))
@@ -203,18 +205,15 @@ private fun handleException(e: Exception, context: Context): String {
     }
 }
 
-@Preview(showBackground = true, name = "Access Screen Preview")
+@Preview(showBackground = true, name = "Access Code Screen Preview")
 @Composable
-fun AccessScreenPreview() {
+fun AccessCodeScreenPreview() {
     ResumeTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AccessScreen(
-                onNavigateToSuccessScreen = { println("Preview: Navigate to success!") },
-                onShowErrorMessage = { message -> println("Preview Error: $message") }
-            )
+            AccessCodeScreen(navController = NavHostController(LocalContext.current))
         }
     }
 }

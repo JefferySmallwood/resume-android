@@ -5,12 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.jws.resume.data.dao.MetaDataDao
 import com.jws.resume.data.dao.ResumeDao
 import com.jws.resume.data.entities.EducationEntry
 import com.jws.resume.data.entities.JobExperience
 import com.jws.resume.data.entities.Reference
 import com.jws.resume.data.entities.ResumeProfile
 import com.jws.resume.data.entities.Skill
+import com.jws.resume.data.entities.MetaData
 import com.jws.resume.util.Converters
 
 @Database(
@@ -19,7 +21,8 @@ import com.jws.resume.util.Converters
         JobExperience::class,
         Skill::class,
         EducationEntry::class,
-        Reference::class
+        Reference::class,
+        MetaData::class
     ],
     version = 1,
     exportSchema = true
@@ -28,6 +31,8 @@ import com.jws.resume.util.Converters
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun resumeDao(): ResumeDao
+
+    abstract fun metaDataDao(): MetaDataDao
 
     companion object {
         @Volatile

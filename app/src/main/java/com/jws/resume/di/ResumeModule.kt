@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.functions.ktx.functions
 import com.google.firebase.ktx.Firebase
+import com.jws.resume.data.dao.MetaDataDao
 import com.jws.resume.data.dao.ResumeDao
 import com.jws.resume.data.db.AppDatabase
 import com.jws.resume.data.repos.ResumeRepository
@@ -33,6 +34,10 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideMetaDataDao(appDatabase: AppDatabase): MetaDataDao = appDatabase.metaDataDao()
+
+    @Provides
+    @Singleton
     fun provideFirebaseFunctions(): FirebaseFunctions = Firebase.functions
 
     @Provides
@@ -45,8 +50,9 @@ object AppModule {
     @Singleton
     fun provideResumeRepository(
         resumeDao: ResumeDao,
+        metaDataDao: MetaDataDao,
         firebaseFunctionsService: FirebaseFunctionsService
     ): ResumeRepository {
-        return ResumeRepositoryImpl(resumeDao, firebaseFunctionsService)
+        return ResumeRepositoryImpl(resumeDao, metaDataDao, firebaseFunctionsService)
     }
 }

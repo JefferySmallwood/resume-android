@@ -1,4 +1,4 @@
-package com.jws.resume.ui
+package com.jws.resume.ui.resume
 
 import SectionHeader
 import android.os.Build
@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
@@ -43,9 +45,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.jws.resume.R
-import com.jws.resume.model.Resume
-import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.education.EducationSectionContent
 import com.jws.resume.ui.experience.ExperienceSectionContent
 import com.jws.resume.ui.fab.ResumeFabMenu
@@ -57,10 +59,17 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ResumeScreen(
-    resume: Resume,
+    resumeId: String,
     modifier: Modifier = Modifier,
+    resumeViewModel: ResumeViewModel = hiltViewModel(),
+    navController: NavHostController? = null,
     content: @Composable () -> Unit = {}
 ) {
+    val uiState by resumeViewModel.uiState.collectAsState()
+    val resume by resumeViewModel.currentResume.collectAsState().also {
+        resumeViewModel.loadResumeDetails(resumeId)
+    }
+
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -114,7 +123,8 @@ fun ResumeScreen(
                 onExperienceClick = collapseFab { coroutineScope.launch { listState.animateScrollToItem(index = sectionKeys["Experience"]!!, scrollOffset = -statusBarHeightPx) } },
                 onSkillsClick = collapseFab { coroutineScope.launch { listState.animateScrollToItem(index = sectionKeys["Skills"]!!, scrollOffset = -statusBarHeightPx) } },
                 onEducationClick = collapseFab { coroutineScope.launch { listState.animateScrollToItem(index = sectionKeys["Education"]!!, scrollOffset = -statusBarHeightPx) } },
-                onReferencesClick = collapseFab { coroutineScope.launch { listState.animateScrollToItem(index = sectionKeys["References"]!!, scrollOffset = -statusBarHeightPx) } }
+                onReferencesClick = collapseFab { coroutineScope.launch { listState.animateScrollToItem(index = sectionKeys["References"]!!, scrollOffset = -statusBarHeightPx) } },
+                onChangeResumesClick = collapseFab { navController?.navigate(route = "access_code") }
             )
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -133,36 +143,48 @@ fun ResumeScreen(
             ) {
                 // --- Home Section ---
                 item(key = "Home") {
-                    HomeScreen(
-                        homeInfo = resume.resume.homeInfo,
-                        modifier = Modifier
-                            .height(screenHeight)
-                            .fillMaxWidth()
-                    )
+                    // TODO: Replace let statements with proper loading states for each view if the Resume is currently null / loading
+                    resume?.let {
+                        HomeScreen(
+                            homeInfo = it.resume.homeInfo,
+                            modifier = Modifier
+                                .height(screenHeight)
+                                .fillMaxWidth()
+                        )
+                    }
+
                 }
 
                 // --- Experience Section ---
                 item(key = "Experience") {
                     SectionHeader(title = stringResource(R.string.experience))
-                    ExperienceSectionContent(experience = resume.experiences)
+                    resume?.let {
+                        ExperienceSectionContent(experience = it.experiences)
+                    }
                 }
 
                 // --- Skills Section ---
                 item(key = "Skills") {
                     SectionHeader(title = stringResource(R.string.skills))
-                    SkillsSectionContent(skills = resume.skills)
+                    resume?.let {
+                        SkillsSectionContent(skills = it.skills)
+                    }
                 }
 
                 // --- Education Section ---
                 item(key = "Education") {
                     SectionHeader(title = stringResource(R.string.education))
-                    EducationSectionContent(education = resume.educationEntries)
+                    resume?.let {
+                        EducationSectionContent(education = it.educationEntries)
+                    }
                 }
 
                 // --- References Section ---
                 item(key = "References") {
                     SectionHeader(title = stringResource(R.string.references))
-                    ReferencesSectionContent(references = resume.references)
+                    resume?.let {
+                        ReferencesSectionContent(references = it.references)
+                    }
                 }
 
                 item { Spacer(Modifier.height(16.dp + paddingValues.calculateBottomPadding())) }
@@ -210,7 +232,10 @@ fun ResumePreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            ResumeScreen(resume = mockResumeData)
+            ResumeScreen(
+                resumeId = "default",
+                navController = NavHostController(LocalContext.current)
+            )
         }
     }
 }

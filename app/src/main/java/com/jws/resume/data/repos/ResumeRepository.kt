@@ -5,6 +5,14 @@ import kotlinx.coroutines.flow.Flow
 
 interface ResumeRepository {
 
+    suspend fun initializeMetaDataIfNeeded()
+
+    fun getCurrentResumeId(): Flow<String?>
+
+    suspend fun setCurrentResumeId(resumeId: String)
+
+    suspend fun clearCurrentResumeId()
+
     fun getAllResumes(): Flow<List<Resume>>
 
     fun getResumeById(resumeId: String): Flow<Resume?>

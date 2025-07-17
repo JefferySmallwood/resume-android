@@ -17,12 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -61,12 +58,14 @@ fun ResumeFabMenu(
     onExperienceClick: () -> Unit = {},
     onSkillsClick: () -> Unit = {},
     onEducationClick: () -> Unit = {},
-    onReferencesClick: () -> Unit = {}
+    onReferencesClick: () -> Unit = {},
+    onChangeResumesClick: () -> Unit = {}
 ) {
     val workIcon = ImageVector.vectorResource(id = R.drawable.baseline_work_history_24)
     val skillsIcon = ImageVector.vectorResource(id = R.drawable.baseline_psychology_24)
     val schoolIcon = ImageVector.vectorResource(id = R.drawable.baseline_school_24)
     val groupIcon = ImageVector.vectorResource(id = R.drawable.baseline_groups_24)
+    val changeResumesIcon = ImageVector.vectorResource(id = R.drawable.baseline_swap_horiz_24)
 
     val fabItems = remember {
         listOf(
@@ -74,7 +73,8 @@ fun ResumeFabMenu(
             FabMenuItem(label = "Experience", workIcon, onClickAction = onExperienceClick),
             FabMenuItem(label = "Skills", skillsIcon, onClickAction = onSkillsClick),
             FabMenuItem(label = "Education", schoolIcon, onClickAction = onEducationClick),
-            FabMenuItem(label = "References", groupIcon, onClickAction = onReferencesClick)
+            FabMenuItem(label = "References", groupIcon, onClickAction = onReferencesClick),
+            FabMenuItem(label = "Change Resumes", changeResumesIcon, onClickAction = onChangeResumesClick)
         )
     }
 
@@ -188,7 +188,8 @@ fun ResumeFabMenuPreview() {
                     onExperienceClick = { println("Experience Clicked") },
                     onSkillsClick = { println("Skills Clicked") },
                     onEducationClick = { println("Education Clicked") },
-                    onReferencesClick = { println("References Clicked") }
+                    onReferencesClick = { println("References Clicked") },
+                    onChangeResumesClick = { println("Change Resumes Clicked") }
                 )
             },
             floatingActionButtonPosition = FabPosition.End,

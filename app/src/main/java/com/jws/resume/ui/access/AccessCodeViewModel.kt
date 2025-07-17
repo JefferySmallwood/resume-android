@@ -20,7 +20,7 @@ sealed interface AccessUiState {
 }
 
 @HiltViewModel
-class AccessViewModel @Inject constructor(
+class AccessCodeViewModel @Inject constructor(
     private val resumeRepository: ResumeRepository
 ) : ViewModel() {
 
@@ -62,21 +62,9 @@ class AccessViewModel @Inject constructor(
         }
     }
 
-    fun loadResumeDetails(resumeId: String) {
+    fun setCurrentResumeId(resumeId: String) {
         viewModelScope.launch {
-            _uiState.value = AccessUiState.Loading
-
-            try {
-                resumeRepository.getResumeById(resumeId).collect { resume ->
-                    if (resume != null) {
-                        _uiState.value = AccessUiState.Success(resume)
-                    } else {
-                        _uiState.value = AccessUiState.Error("Resume details not found.")
-                    }
-                }
-            } catch (e: Exception) {
-                _uiState.value = AccessUiState.Error("Error loading resume details: ${e.message}")
-            }
+            resumeRepository.setCurrentResumeId(resumeId)
         }
     }
 
