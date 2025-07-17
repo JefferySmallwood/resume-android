@@ -31,6 +31,7 @@ import com.jws.resume.R
 import com.jws.resume.data.entities.EducationEntry
 import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.theme.ResumeTheme
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun EducationCard(
@@ -48,6 +49,7 @@ fun EducationCard(
     ) {
         if (entry.imageUrl != null) {
             val imageRequestBuilder = ImageRequest.Builder(context)
+                .dispatcher(Dispatchers.IO)
                 .data(entry.imageUrl)
                 .placeholder(R.drawable.profile_loading)
                 .error(R.drawable.profile_error)

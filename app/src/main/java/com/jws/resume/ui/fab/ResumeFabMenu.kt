@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -40,6 +39,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
@@ -63,13 +63,18 @@ fun ResumeFabMenu(
     onEducationClick: () -> Unit = {},
     onReferencesClick: () -> Unit = {}
 ) {
+    val workIcon = ImageVector.vectorResource(id = R.drawable.baseline_work_history_24)
+    val skillsIcon = ImageVector.vectorResource(id = R.drawable.baseline_psychology_24)
+    val schoolIcon = ImageVector.vectorResource(id = R.drawable.baseline_school_24)
+    val groupIcon = ImageVector.vectorResource(id = R.drawable.baseline_groups_24)
+
     val fabItems = remember {
         listOf(
             FabMenuItem(label = "Home", Icons.Default.Home, onClickAction = onHomeClick),
-            FabMenuItem(label = "Experience", Icons.Default.Info, onClickAction = onExperienceClick), // TODO: Use Work icon
-            FabMenuItem(label = "Skills", Icons.Default.Build, onClickAction = onSkillsClick),
-            FabMenuItem(label = "Education", Icons.Default.AccountBox, onClickAction = onEducationClick), // TODO: Use School icon
-            FabMenuItem(label = "References", Icons.Default.Person, onClickAction = onReferencesClick)  // TODO: Use Group icon
+            FabMenuItem(label = "Experience", workIcon, onClickAction = onExperienceClick),
+            FabMenuItem(label = "Skills", skillsIcon, onClickAction = onSkillsClick),
+            FabMenuItem(label = "Education", schoolIcon, onClickAction = onEducationClick),
+            FabMenuItem(label = "References", groupIcon, onClickAction = onReferencesClick)
         )
     }
 

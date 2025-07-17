@@ -23,9 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,12 +43,14 @@ import com.jws.resume.ui.common.TextIcon
 import com.jws.resume.ui.common.WebLink
 import com.jws.resume.ui.theme.DarkColorScheme
 import com.jws.resume.ui.theme.ResumeTheme
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 private fun ResizableAsyncImage(homeInfo: HomeInfo) {
     val context = LocalContext.current
     var imageHeight by remember { mutableStateOf<Int?>(null) }
     val imageRequestBuilder = ImageRequest.Builder(context)
+        .dispatcher(Dispatchers.IO)
         .data(homeInfo.profilePictureUrl)
         .placeholder(R.drawable.profile_loading)
         .error(R.drawable.profile_error)
@@ -151,12 +156,14 @@ fun HomeScreen(
             WebLink(
                 userText = stringResource(R.string.linkedin),
                 url = homeInfo.linkedInUrl,
-                iconTint = iconTintOnDarkImage
+                iconTint = iconTintOnDarkImage,
+                painter = painterResource(id = R.drawable.inbug_white)
             )
             WebLink(
                 userText = stringResource(R.string.github),
                 url = homeInfo.githubUrl,
-                iconTint = iconTintOnDarkImage
+                iconTint = iconTintOnDarkImage,
+                painter = painterResource(id = R.drawable.github_mark_white)
             )
             content
         }
