@@ -13,7 +13,9 @@
     <string name="enter_access_code">Enter Access Code</string>
     <string name="example_access_code">e.g., MYCODE123</string>
     <string name="verifying">Verifying…</string>
+    <string name="success">Success!</string>
     <string name="submit_code">Submit Code</string>
+    <string name="error_empty_not_allowed">Access code cannot be empty.</string>
     <string name="error_invalid_request">Invalid request. Please check the input.</string>
     <string name="error_invalid_or_not_found">The access code is invalid or the resume data could not be found.</string>
     <string name="error_access_denied">Access denied. The code may be inactive, expired, or not valid for you.</string>
@@ -42,4 +44,8 @@
     <string name="github">GitHub</string>
     <string name="worked_together">Worked together: %1$s</string>
     <string name="view_linkedin">View LinkedIn</string>
+    <string name="delete_resume_description">Delete the resume of %1$s</string>
+    <string name="downloaded_resumes">Downloaded Resumes</string>
+    <string name="resume_deleted">Resume deleted</string>
+    <string name="undo">Undo</string>
 </resources>
