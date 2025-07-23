@@ -4,14 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +23,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,12 +32,12 @@ import coil.request.ImageRequest
 import com.jws.resume.R
 import com.jws.resume.data.entities.HomeInfo
 import com.jws.resume.model.mockResumeData
-import com.jws.resume.ui.common.EmailAddress
-import com.jws.resume.ui.common.PhoneNumber
+import com.jws.resume.ui.common.ContactItem
+import com.jws.resume.ui.common.IconInfo
 import com.jws.resume.ui.common.TextIcon
-import com.jws.resume.ui.common.WebLink
 import com.jws.resume.ui.theme.DarkColorScheme
 import com.jws.resume.ui.theme.ResumeTheme
+import com.jws.resume.util.ContactType
 import kotlinx.coroutines.Dispatchers
 
 @Composable
@@ -109,60 +106,85 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 8.dp)
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding()
         ) {
             Text(
                 text = homeInfo.name,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 2.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 style = MaterialTheme.typography.headlineLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = homeInfo.tagline,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 2.dp, bottom = 0.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
             )
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                val textStyle = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
                 TextIcon(
                     text = homeInfo.location,
                     modifier = Modifier.weight(1f),
-                    startIcon = Icons.Filled.Place,
-                    iconTint = iconTintOnDarkImage
+                    start = IconInfo(iconRes = R.drawable.baseline_location_pin_24),
+                    iconTint = iconTintOnDarkImage,
+                    textStyle = textStyle
                 )
                 TextIcon(
                     text = stringResource(R.string.experience_years, homeInfo.yearsExperience),
                     modifier = Modifier.weight(1f),
-                    startIcon = Icons.Filled.Star,
-                    iconTint = iconTintOnDarkImage
+                    start = IconInfo(iconRes = R.drawable.baseline_star_24),
+                    iconTint = iconTintOnDarkImage,
+                    textStyle = textStyle
                 )
             }
-            EmailAddress(
-                emailAddress = homeInfo.email,
+            Spacer(modifier = Modifier.height(8.dp))
+            ContactItem(
+                contactType = ContactType.EMAIL(
+                    emailAddress = homeInfo.email,
+                    subject = stringResource(R.string.email_subject)
+                ),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 iconTint = iconTintOnDarkImage
             )
-            PhoneNumber(
-                phoneNumber = homeInfo.phoneNumber,
+            ContactItem(
+                contactType = ContactType.PHONE(phoneNumber = homeInfo.phoneNumber),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 iconTint = iconTintOnDarkImage
             )
-            WebLink(
-                userText = stringResource(R.string.linkedin),
-                url = homeInfo.linkedInUrl,
-                iconTint = iconTintOnDarkImage,
-                painter = painterResource(id = R.drawable.inbug_white)
+            ContactItem(
+                contactType = ContactType.Web.LINKEDIN(
+                    userText = stringResource(R.string.linkedin),
+                    url = homeInfo.linkedInUrl
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                iconTint = iconTintOnDarkImage
             )
-            WebLink(
-                userText = stringResource(R.string.github),
-                url = homeInfo.githubUrl,
-                iconTint = iconTintOnDarkImage,
-                painter = painterResource(id = R.drawable.github_mark_white)
+            ContactItem(
+                contactType = ContactType.Web.GITHUB(
+                    userText = stringResource(R.string.github),
+                    url = homeInfo.githubUrl
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                iconTint = iconTintOnDarkImage
             )
+            Spacer(modifier = Modifier.height(8.dp))
             content
         }
     }

@@ -2,6 +2,7 @@ package com.jws.resume.util
 
 import android.content.Context
 import android.widget.Toast
+import androidx.annotation.StringRes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,8 +31,25 @@ object ToastHelper {
         }
     }
 
+    fun showUniqueToast(context: Context, @StringRes resId: Int, duration: Int = Toast.LENGTH_LONG) {
+        if (!isToastShowing) {
+            isToastShowing = true
+            Toast.makeText(context.applicationContext, resId, duration).show()
+
+            currentToastJob?.cancel()
+            currentToastJob = scope.launch {
+                delay(timeMillis = duration.toToastMillis() + 500L)
+                isToastShowing = false
+            }
+        }
+    }
+
     fun showToast(context: Context, text: String, duration: Int = Toast.LENGTH_LONG) {
         Toast.makeText(context.applicationContext, text, duration).show()
+    }
+
+    fun showToast(context: Context, @StringRes resId: Int, duration: Int = Toast.LENGTH_LONG) {
+        Toast.makeText(context.applicationContext, resId, duration).show()
     }
 
     private fun Int.toToastMillis(): Long {

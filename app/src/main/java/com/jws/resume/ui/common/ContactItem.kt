@@ -1,66 +1,85 @@
 package com.jws.resume.ui.common
 
-import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.jws.resume.ui.theme.ResumeTheme
+import com.jws.resume.util.ContactResolver
+import com.jws.resume.util.ContactType
 
 @Composable
 fun ContactItem(
-    icon: ImageVector,
-    text: String,
+    contactType: ContactType,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    content: @Composable () -> Unit = {}
+    iconTint: Color = MaterialTheme.colorScheme.onSurface
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 4.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        content
+    val context = LocalContext.current
+    TextIcon(
+        text = contactType.userText,
+        modifier = Modifier
+            .clickable { ContactResolver.resolveContact(context, contactType) }
+            .then(modifier),
+        start = IconInfo(iconRes = contactType.iconRes),
+        iconTint = iconTint,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(
+            textDecoration = TextDecoration.Underline,
+            color = MaterialTheme.colorScheme.secondary,
+        ),
+    )
+}
+
+@Preview(showBackground = true, name = "Contact Item (Default Web) Preview")
+@Composable
+fun ContactItemWebDefaultPreview() {
+    ResumeTheme {
+        ContactItem(contactType = ContactType.Web.DEFAULT(url = "https://www.example.com"))
     }
 }
 
-@Preview(showBackground = true, name = "Contact Item Preview")
+@Preview(showBackground = true, name = "Contact Item (Web LinkedIn) Preview")
 @Composable
-fun ContactItemPreview() {
+fun ContactItemWebLinkedInPreview() {
     ResumeTheme {
-        ContactItem(
-            icon = Icons.Default.Email,
-            text = "john.tyler@examplepetstore.com"
-        ) {
-            Log.d("ContactItemPreview", "Contact item clicked")
-        }
+        ContactItem(contactType = ContactType.Web.LINKEDIN(url = "https://www.linkedin.com"))
     }
 }
+
+@Preview(showBackground = true, name = "Contact Item (Web GitHub) Preview")
+@Composable
+fun ContactItemWebGitHubPreview() {
+    ResumeTheme {
+        ContactItem(contactType = ContactType.Web.GITHUB(url = "https://www.github.com"))
+    }
+}
+
+@Preview(showBackground = true, name = "Contact Item (Email) Preview")
+@Composable
+fun ContactItemEmailPreview() {
+    ResumeTheme {
+        ContactItem(
+            contactType = ContactType.EMAIL(
+                emailAddress = "william.henry.harrison@example-pet-store.com",
+                userText = "Email address",
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Contact Item (Phone) Preview")
+@Composable
+fun ContactItemPhonePreview() {
+    ResumeTheme {
+        ContactItem(
+            contactType = ContactType.PHONE(
+                phoneNumber = "1234567890",
+                userText = "(123)456-7890",
+            )
+        )
+    }
+}
+
