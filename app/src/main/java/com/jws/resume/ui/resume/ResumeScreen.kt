@@ -1,6 +1,7 @@
 package com.jws.resume.ui.resume
 
 import SectionHeader
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -46,8 +47,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.jws.resume.R
+import com.jws.resume.model.Resume
+import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.education.EducationSectionContent
 import com.jws.resume.ui.experience.ExperienceSectionContent
 import com.jws.resume.ui.fab.ResumeFabMenu
@@ -55,21 +59,17 @@ import com.jws.resume.ui.home.HomeScreen
 import com.jws.resume.ui.references.ReferencesSectionContent
 import com.jws.resume.ui.skills.SkillsSectionContent
 import com.jws.resume.ui.theme.ResumeTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @Composable
 fun ResumeScreen(
-    resumeId: String,
     modifier: Modifier = Modifier,
     resumeViewModel: ResumeViewModel = hiltViewModel(),
-    navController: NavHostController? = null,
-    content: @Composable () -> Unit = {}
+    navController: NavHostController? = null
 ) {
     val uiState by resumeViewModel.uiState.collectAsState()
-    val resume by resumeViewModel.currentResume.collectAsState().also {
-        resumeViewModel.loadResumeDetails(resumeId)
-    }
-
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -143,47 +143,43 @@ fun ResumeScreen(
             ) {
                 // --- Home Section ---
                 item(key = "Home") {
-                    // TODO: Replace let statements with proper loading states for each view if the Resume is currently null / loading
-                    resume?.let {
-                        HomeScreen(
-                            homeInfo = it.resume.homeInfo,
-                            modifier = Modifier
-                                .height(screenHeight)
-                                .fillMaxWidth()
-                        )
-                    }
-
+                    HomeScreen(
+                        modifier = Modifier
+                            .height(screenHeight)
+                            .fillMaxWidth(),
+                        uiState = uiState
+                    )
                 }
 
                 // --- Experience Section ---
                 item(key = "Experience") {
-                    SectionHeader(title = stringResource(R.string.experience))
-                    resume?.let {
-                        ExperienceSectionContent(experience = it.experiences)
+                    if (uiState is ResumeUiState.Success) {
+                        SectionHeader(title = stringResource(R.string.experience))
+                        ExperienceSectionContent(experience = (uiState as ResumeUiState.Success).resume.experiences)
                     }
                 }
 
                 // --- Skills Section ---
                 item(key = "Skills") {
-                    SectionHeader(title = stringResource(R.string.skills))
-                    resume?.let {
-                        SkillsSectionContent(skills = it.skills)
+                    if (uiState is ResumeUiState.Success) {
+                        SectionHeader(title = stringResource(R.string.skills))
+                        SkillsSectionContent(skills = (uiState as ResumeUiState.Success).resume.skills)
                     }
                 }
 
                 // --- Education Section ---
                 item(key = "Education") {
-                    SectionHeader(title = stringResource(R.string.education))
-                    resume?.let {
-                        EducationSectionContent(education = it.educationEntries)
+                    if (uiState is ResumeUiState.Success) {
+                        SectionHeader(title = stringResource(R.string.education))
+                        EducationSectionContent(education = (uiState as ResumeUiState.Success).resume.educationEntries)
                     }
                 }
 
                 // --- References Section ---
                 item(key = "References") {
-                    SectionHeader(title = stringResource(R.string.references))
-                    resume?.let {
-                        ReferencesSectionContent(references = it.references)
+                    if (uiState is ResumeUiState.Success) {
+                        SectionHeader(title = stringResource(R.string.references))
+                        ReferencesSectionContent(references = (uiState as ResumeUiState.Success).resume.references)
                     }
                 }
 
@@ -220,21 +216,64 @@ fun ResumeScreen(
                 )
             }
         }
-        content
     }
 }
 
-@Preview(showBackground = true, name = "Resume Preview")
+private class FakeResumeViewModel(state: ResumeUiState): ResumeViewModel(
+    resumeRepository = null,
+    savedStateHandle = SavedStateHandle()
+) {
+    override val uiState: StateFlow<ResumeUiState> = MutableStateFlow(state)
+    override val currentResume: StateFlow<Resume?> = MutableStateFlow(mockResumeData)
+    override fun loadResumeDetails(resumeId: String) { }
+}
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Preview(showBackground = true, name = "Resume (Success) Preview")
 @Composable
-fun ResumePreview() {
+fun ResumeSuccessPreview() {
     ResumeTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             ResumeScreen(
-                resumeId = "default",
-                navController = NavHostController(LocalContext.current)
+                resumeViewModel = FakeResumeViewModel(ResumeUiState.Success(resume = mockResumeData)),
+                navController = NavHostController(LocalContext.current),
+            )
+        }
+    }
+}
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Preview(showBackground = true, name = "Resume (Loading) Preview")
+@Composable
+fun ResumeLoadingPreview() {
+    ResumeTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            ResumeScreen(
+                resumeViewModel = FakeResumeViewModel(ResumeUiState.Loading),
+                navController = NavHostController(LocalContext.current),
+            )
+        }
+    }
+}
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Preview(showBackground = true, name = "Resume (Error) Preview")
+@Composable
+fun ResumeErrorPreview() {
+    ResumeTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            ResumeScreen(
+                resumeViewModel = FakeResumeViewModel(ResumeUiState.Error("")),
+                navController = NavHostController(LocalContext.current),
             )
         }
     }

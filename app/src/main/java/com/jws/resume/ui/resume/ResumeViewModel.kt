@@ -1,5 +1,5 @@
 package com.jws.resume.ui.resume
-
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jws.resume.data.repos.ResumeRepository
@@ -19,22 +19,41 @@ sealed interface ResumeUiState {
 }
 
 @HiltViewModel
-class ResumeViewModel @Inject constructor(
-    private val resumeRepository: ResumeRepository
+open class ResumeViewModel @Inject constructor(
+    private val resumeRepository: ResumeRepository?,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    companion object {
+        const val RESUME_ID_ARG_KEY = "resumeId"
+    }
+
     private val _uiState = MutableStateFlow<ResumeUiState>(ResumeUiState.Idle)
-    val uiState: StateFlow<ResumeUiState> = _uiState.asStateFlow()
+    open val uiState: StateFlow<ResumeUiState> = _uiState.asStateFlow()
 
     private val _currentResume = MutableStateFlow<Resume?>(null)
-    val currentResume: StateFlow<Resume?> = _currentResume.asStateFlow()
+    open val currentResume: StateFlow<Resume?> = _currentResume.asStateFlow()
 
-    fun loadResumeDetails(resumeId: String) {
+    private val resumeId: String? = savedStateHandle.get<String>(RESUME_ID_ARG_KEY)
+
+    init {
+        resumeId?.let { id ->
+            if (id.isNotBlank()) {
+                loadResumeDetails(id)
+            } else {
+                _uiState.value = ResumeUiState.Error("Invalid Resume ID")
+            }
+        } ?: run {
+            _uiState.value = ResumeUiState.Error("Resume ID not found")
+        }
+    }
+
+    open fun loadResumeDetails(resumeId: String) {
         viewModelScope.launch {
             _uiState.value = ResumeUiState.Loading
 
             try {
-                resumeRepository.getResumeById(resumeId).collect { resume ->
+                resumeRepository?.getResumeById(resumeId)?.collect { resume ->
                     if (resume != null) {
                         _uiState.value = ResumeUiState.Success(resume)
                         _currentResume.value = resume
