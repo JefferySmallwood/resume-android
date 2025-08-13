@@ -32,13 +32,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.jws.resume.R
 import com.jws.resume.data.entities.Reference
 import com.jws.resume.model.mockResumeData
 import com.jws.resume.ui.theme.ResumeTheme
+import com.jws.resume.util.ContactResolver
+import com.jws.resume.util.ContactType
 
 @Composable
 fun ReferenceCard(
@@ -105,13 +106,13 @@ fun ReferenceCard(
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(Modifier.width(16.dp))
+                val linkedInContactType = ContactType.Web.LINKEDIN(
+                    url = reference.linkedInProfileUrl,
+                    userText = stringResource(R.string.view_linkedin)
+                )
                 TextButton(
-                    // TODO: Replace these intents with an extension function
                     onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                            data = reference.linkedInProfileUrl.toUri()
-                        }
-                        context.startActivity(intent)
+                        ContactResolver.resolveContact(context, contactType = linkedInContactType)
                     },
                 ) {
                     Icon(
