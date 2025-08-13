@@ -35,7 +35,6 @@ interface ResumeDao {
     @Transaction
     suspend fun insertResume(resume: Resume) {
         insertResumeProfile(resume.resume)
-        // TODO: Revisit, it's likely that with the changes on the backend, the resumeOwnerId is already populated
         val parentId = resume.resume.resumeId
         insertJobExperiences(resume.experiences.map { it.copy(resumeOwnerId = parentId) })
         insertSkills(resume.skills.map { it.copy(resumeOwnerId = parentId) })

@@ -9,6 +9,7 @@ import com.jws.resume.data.entities.Skill
 
 val mockResumeData = Resume(
     resume = ResumeProfile(
+        resumeId = "c1ed014b986647569100822857b92ced",
         homeInfo = HomeInfo(
             name = "Alex Doe",
             tagline = "Versatile Developer |\nCreative Solutions",
