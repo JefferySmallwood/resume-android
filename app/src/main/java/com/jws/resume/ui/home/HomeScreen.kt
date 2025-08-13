@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.jws.resume.R
 import com.jws.resume.data.entities.HomeInfo
 import com.jws.resume.model.mockResumeData
@@ -42,20 +41,14 @@ import com.jws.resume.ui.resume.ResumeUiState
 import com.jws.resume.ui.theme.DarkColorScheme
 import com.jws.resume.ui.theme.ResumeTheme
 import com.jws.resume.util.ContactType
-import kotlinx.coroutines.Dispatchers
+import com.jws.resume.util.getDefaultImageRequestBuilder
 
 @Composable
 private fun ResizableAsyncImage(homeInfo: HomeInfo) {
     val context = LocalContext.current
     var imageHeight by remember { mutableStateOf<Int?>(null) }
     val imageRequestBuilder = remember(homeInfo.profilePictureUrl) {
-        ImageRequest.Builder(context)
-            .dispatcher(Dispatchers.IO)
-            .data(homeInfo.profilePictureUrl)
-            .error(R.drawable.profile_error)
-            .crossfade(true)
-            .crossfade(300)
-            .allowHardware(true)
+        getDefaultImageRequestBuilder(context, homeInfo.profilePictureUrl)
             .listener(
                 onSuccess = { request, result ->
                     val height = result.drawable.intrinsicHeight

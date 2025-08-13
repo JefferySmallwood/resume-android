@@ -1,7 +1,5 @@
 package com.jws.resume.ui.references
 
-import android.content.Intent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,8 +20,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,11 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.jws.resume.R
 import com.jws.resume.data.entities.Reference
 import com.jws.resume.model.mockResumeData
+import com.jws.resume.ui.common.ProfileAsyncImage
 import com.jws.resume.ui.theme.ResumeTheme
 import com.jws.resume.util.ContactResolver
 import com.jws.resume.util.ContactType
@@ -58,19 +52,10 @@ fun ReferenceCard(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(reference.profilePictureUrl)
-                        .placeholder(R.drawable.profile_loading)
-                        .error(R.drawable.profile_error)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = stringResource(R.string.profile_picture_of, reference.name),
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
-                    contentScale = ContentScale.Crop
+                ProfileAsyncImage(
+                    url = reference.profilePictureUrl,
+                    name = reference.name,
+                    modifier = Modifier.size(60.dp)
                 )
                 Spacer(Modifier.width(16.dp))
                 Text(
