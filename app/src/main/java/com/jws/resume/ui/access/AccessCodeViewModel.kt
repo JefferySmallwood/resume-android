@@ -122,8 +122,16 @@ class AccessCodeViewModel @Inject constructor(
         viewModelScope.launch {
             resumeRepository.getAllResumes().collect { resumes ->
                 _downloadedResumes.value = resumes
+                if (resumes.isEmpty()) {
+                    fetchSampleResume()
+                }
             }
         }
+    }
+
+    private suspend fun fetchSampleResume() {
+        val sampleUserAccessCode = "SAMPLEUSER1"
+        resumeRepository.fetchAndStoreResumeFromApi(accessCode = sampleUserAccessCode)
     }
 
     fun resetUiStateToIdle() {
